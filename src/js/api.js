@@ -7,7 +7,7 @@ const gallery = document.querySelector('.gallery');
 const btnLoadMore = document.querySelector('.load-more');
 
 btnLoadMore.style.display = "none";
-
+ 
 function getImage(query) {
 
     axios.get(`${URL_BASE}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`).then(onMarkup)
