@@ -1,66 +1,56 @@
+// import axios from 'axios';
+// import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
+// const API_KEY = '37603150-cf2f7acce1783634ed18c2efe';
+// const URL_BASE = 'https://pixabay.com/api/';
+
+
+// async function getImage(query, page) {
+//     try {
+//         const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=200&page=${page}`)
+//         return response
+//     }
+//     catch(error) {
+//         console.log(error)
+//     }
+        
+// };
+
+// export default getImage;
+
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const API_KEY = '37603150-cf2f7acce1783634ed18c2efe';
 const URL_BASE = 'https://pixabay.com/api/';
 
-// export default class SearchImageApi{
-
-//     constructor() {
-
-//     }
-
-    function getImage(query, page) {
-    // axios.get(`${URL_BASE}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=3&page=${page}`).then(onMarkup)
-        return axios.get(`${URL_BASE}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=200&page=${page}`)
+class PhotoSearchApi{
+    constructor() {
+        this.page = 1;
+        this.searchQuery = '';
+        this.loadedHits = 0;
     }
 
- 
-// function getImage(query,page) {
-
-//     axios.get(`${URL_BASE}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&per_page=3&page=${page}`).then(onMarkup);
+async getImage() {
+    try {
+        const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=5&page=${this.page}`);
+        const rez = await response.data.hits
+        return rez
+        
+    }
+    catch(error) {
+        console.log(error)
+    }
+    }
     
-// };
 
-// function onMarkup(obj) {
-//     const pictureObj = obj.data.hits;
+    increasePage() {
+        return this.page += 1;
+    }
 
-//     if (pictureObj.length === 0) {
-//         Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-//     }
+    totalLoadHits(loadedHits) {
+        return this.loadedHits += loadedHits
+    }
+}
 
-//     else {
-//         pictureObj.map(e => gallery.insertAdjacentHTML("beforeend", OnMarkupCard(e)))
-//         btnLoadMore.classList.remove('is-hidden')
-//     }
-// };
-
-
-// function OnMarkupCard(e) {
-//        return `<div class="photo-card">
-//   <img src="${e.webformatURL}" alt="${e.tags}" width="300px" height="180px" loading="lazy" />
-//   <div class="info">
-//     <p class="info-item">
-//       <b>Likes</b>
-//       <span>${e.likes}</span>
-//     </p>
-//     <p class="info-item">
-//       <b>Views</b>
-//        <span>${e.views}</span>
-//     </p>
-//     <p class="info-item">
-//       <b>Comments</b>
-//        <span>${e.comments}</span>
-//     </p>
-//     <p class="info-item">
-//       <b>Downloads</b>
-//        <span>${e.downloads}</span>
-//     </p>
-//   </div>
-// </div>`
-     
-// };
-
-
-
-export default getImage;
+export default PhotoSearchApi;
