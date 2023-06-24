@@ -33,9 +33,9 @@ class PhotoSearchApi{
 
 async getImage() {
     try {
-        const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=5&page=${this.page}`);
-        const rez = await response.data.hits
-        return rez
+        const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=200&page=${this.page}`);
+        const resObjImage = await response.data;
+        return resObjImage;
         
     }
     catch(error) {
@@ -43,13 +43,12 @@ async getImage() {
     }
     }
     
-
     increasePage() {
         return this.page += 1;
     }
 
     totalLoadHits(loadedHits) {
-        return this.loadedHits += loadedHits
+        return this.loadedHits += loadedHits;
     }
 }
 

@@ -92,7 +92,7 @@
 // };
 
 import PhotoSearchApi from './api.js';
-import onMarkupGallery from './markup.js';
+import OnMarkupCard from './markup.js';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
  
 const form = document.querySelector('#search-form');
@@ -104,7 +104,7 @@ const photoSearchApi = new PhotoSearchApi();
 form.addEventListener('submit', onSubmit);
 btnLoadMore.addEventListener('click', onLoadBtn);
 
-function onSubmit(e) {
+async function onSubmit(e) {
     e.preventDefault();
 
     photoSearchApi.searchQuery = form.elements.searchQuery.value;
@@ -113,56 +113,44 @@ function onSubmit(e) {
 
     if (photoSearchApi.searchQuery === '') {
         return
-    }
+    };
+    onMarkup(await photoSearchApi.getImage());
 
-    // onMarkupGallery(photoSearchApi.getImage());
-    //  console.log(photoSearchApi.getObj())
-    onMarkup(photoSearchApi.getImage())
-
-    e.currentTarget.reset();
+    e.target.reset();
 }
 
-function onLoadBtn() {
-    photoSearchApi.increasePage();
-    // onMarkupGallery(photoSearchApi.getImage());
-   
+async function onLoadBtn() {
+    await photoSearchApi.increasePage();
+    onMarkup(await photoSearchApi.getImage());
 }
 
-function onMarkup(obj) {
+async function onMarkup(obj) {
 
-    if (!obj.length) {
+    try {
+       const pictureObj = await obj.hits;
+    const totalHits = await obj.totalHits;
+
+       if (!pictureObj.length) {
         btnLoadMore.classList.add('is-hidden');
         Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         return
+     }
+     else {
+       pictureObj.map(e => gallery.insertAdjacentHTML("beforeend", OnMarkupCard(e)));
+        btnLoadMore.classList.remove('is-hidden');
+        photoSearchApi.totalLoadHits(pictureObj.length); 
     }
 
-    obj.map(e => gallery.insertAdjacentHTML("beforeend", OnMarkupCard(e)));
-    btnLoadMore.classList.remove('is-hidden');
+    if (photoSearchApi.loadedHits === totalHits) {
+        btnLoadMore.classList.add('is-hidden');
+        Notify.info(`We're sorry, but you've reached the end of search results.`)
+    } 
+    }
 
-}
-  
-function OnMarkupCard(e) {
-       return `<div class="photo-card">
-  <img src="${e.webformatURL}" alt="${e.tags}" width="300px" height="180px" loading="lazy" />
-  <div class="info">
-    <p class="info-item">
-      <b>Likes</b>
-      <span>${e.likes}</span>
-    </p>
-    <p class="info-item">
-      <b>Views</b>
-       <span>${e.views}</span>
-    </p>
-    <p class="info-item">
-      <b>Comments</b>
-       <span>${e.comments}</span>
-    </p>
-    <p class="info-item">
-      <b>Downloads</b>
-       <span>${e.downloads}</span>
-    </p>
-  </div>
-</div>`
-     
+    catch(error) {
+        console.log(error)
+    }
+   
 };
+
 
