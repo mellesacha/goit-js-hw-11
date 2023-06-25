@@ -29,11 +29,12 @@ class PhotoSearchApi{
         this.page = 1;
         this.searchQuery = '';
         this.loadedHits = 0;
+        this.totalHits = 0;
     }
 
 async getImage() {
     try {
-        const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=200&page=${this.page}`);
+        const response = await axios.get(`${URL_BASE}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`);
         const resObjImage = await response.data;
         return resObjImage;
         
@@ -49,6 +50,10 @@ async getImage() {
 
     totalLoadHits(loadedHits) {
         return this.loadedHits += loadedHits;
+    }
+
+    totalSearchHits(searchHits) {
+        return this.totalHits = searchHits;
     }
 }
 

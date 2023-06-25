@@ -115,6 +115,7 @@ async function onSubmit(e) {
         return
     };
     onMarkup(await photoSearchApi.getImage());
+    onTotalHitsNotification(await photoSearchApi.getImage());
 
     e.target.reset();
 }
@@ -128,7 +129,7 @@ async function onMarkup(obj) {
 
     try {
        const pictureObj = await obj.hits;
-    const totalHits = await obj.totalHits;
+        const totalHits = await obj.totalHits;
 
        if (!pictureObj.length) {
         btnLoadMore.classList.add('is-hidden');
@@ -138,7 +139,8 @@ async function onMarkup(obj) {
      else {
        pictureObj.map(e => gallery.insertAdjacentHTML("beforeend", OnMarkupCard(e)));
         btnLoadMore.classList.remove('is-hidden');
-        photoSearchApi.totalLoadHits(pictureObj.length); 
+           photoSearchApi.totalLoadHits(pictureObj.length); 
+           
     }
 
     if (photoSearchApi.loadedHits === totalHits) {
@@ -152,5 +154,16 @@ async function onMarkup(obj) {
     }
    
 };
+
+async function onTotalHitsNotification(obj) {
+    try {
+        const totalHits = await obj.totalHits;
+    photoSearchApi.totalSearchHits(totalHits)
+    Notify.info(`Hooray! We found ${totalHits} images.`)
+    }
+    catch(error) {
+        console.log(error)
+    }
+}
 
 
