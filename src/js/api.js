@@ -19,7 +19,6 @@
 // export default getImage;
 
 import axios from 'axios';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const API_KEY = '37603150-cf2f7acce1783634ed18c2efe';
 const URL_BASE = 'https://pixabay.com/api/';

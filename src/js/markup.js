@@ -1,6 +1,8 @@
 export default function OnMarkupCard(e) {
-       return `<div class="photo-card">
-  <img src="${e.webformatURL}" alt="${e.tags}" width="300px" height="180px" loading="lazy" />
+    return `<div class="photo-card">
+  <a href="${e.largeImageURL}">
+  <img src="${e.webformatURL}" alt="${e.tags}" loading="lazy" />
+  </a>
   <div class="info">
     <p class="info-item">
       <b>Likes</b>
@@ -19,6 +21,6 @@ export default function OnMarkupCard(e) {
        <span>${e.downloads}</span>
     </p>
   </div>
-</div>`
+</div>`;
      
 };
