@@ -7,22 +7,22 @@ import "simplelightbox/dist/simple-lightbox.min.css";
  
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
-const btnLoadMore = document.querySelector('.load-more');
+const stepLoadMore = document.querySelector('.load-more');
 
 const photoSearchApi = new PhotoSearchApi();
 let gallerySlider = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
+let observer = new IntersectionObserver(onLoad);
+
 form.addEventListener('submit', onSubmit);
-btnLoadMore.addEventListener('click', onLoadBtn);
 
 async function onSubmit(e) {
     e.preventDefault();
 
     photoSearchApi.searchQuery = form.elements.searchQuery.value;
     gallery.innerHTML = '';
-    btnLoadMore.classList.add('is-hidden');
 
     if (photoSearchApi.searchQuery === '') {
         return
@@ -31,35 +31,32 @@ async function onSubmit(e) {
     onTotalHitsNotification(await photoSearchApi.getImage());
 
     gallerySlider.refresh();
+    observer.observe(stepLoadMore);
 
     e.target.reset();
 }
 
-async function onLoadBtn() {
+async function onLoad() {
     await photoSearchApi.increasePage();
     onMarkup(await photoSearchApi.getImage());
 }
 
-async function onMarkup(obj) {
+function onMarkup(obj) {
 
     try {
-       const pictureObj = await obj.hits;
-        const totalHits = await obj.totalHits;
+       const pictureObj = obj.hits;
+        const totalHits = obj.totalHits;
 
        if (!pictureObj.length) {
-        btnLoadMore.classList.add('is-hidden');
         Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         return
      }
      else {
        pictureObj.map(e => gallery.insertAdjacentHTML("beforeend", OnMarkupCard(e)));
-        btnLoadMore.classList.remove('is-hidden');
            photoSearchApi.totalLoadHits(pictureObj.length); 
-           
     }
 
     if (photoSearchApi.loadedHits === totalHits) {
-        btnLoadMore.classList.add('is-hidden');
         Notify.info(`We're sorry, but you've reached the end of search results.`)
         } 
 
@@ -72,9 +69,9 @@ async function onMarkup(obj) {
    
 };
 
-async function onTotalHitsNotification(obj) {
+function onTotalHitsNotification(obj) {
     try {
-        const totalHits = await obj.totalHits;
+        const totalHits = obj.totalHits;
     photoSearchApi.totalSearchHits(totalHits)
     Notify.info(`Hooray! We found ${totalHits} images.`)
     }
@@ -90,4 +87,6 @@ function smoothScrollGallery() {
     top: height * 2,
     behavior: 'smooth',
   });
-}
+};
+
+
