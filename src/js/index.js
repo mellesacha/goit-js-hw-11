@@ -14,7 +14,20 @@ let gallerySlider = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
-let observer = new IntersectionObserver(onLoad);
+const options = {
+  root: null, 
+  rootMargin: '0px',
+  threshold: 1.0, 
+};
+
+const observer = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
+    console.log(entry.isIntersecting);
+    if (entry.isIntersecting) {
+      onLoad();
+    }
+  });
+}, options);
 
 form.addEventListener('submit', onSubmit);
 
@@ -23,15 +36,17 @@ async function onSubmit(e) {
 
     photoSearchApi.searchQuery = form.elements.searchQuery.value;
     gallery.innerHTML = '';
+    const images = await photoSearchApi.getImage()
 
     if (photoSearchApi.searchQuery === '') {
         return
     };
-    onMarkup(await photoSearchApi.getImage());
-    onTotalHitsNotification(await photoSearchApi.getImage());
+
+    onMarkup(images);
+    onTotalHitsNotification(images);
 
     gallerySlider.refresh();
-    observer.observe(stepLoadMore);
+    observer.observe(gallery.lastElementChild);
 
     e.target.reset();
 }
@@ -39,6 +54,7 @@ async function onSubmit(e) {
 async function onLoad() {
     await photoSearchApi.increasePage();
     onMarkup(await photoSearchApi.getImage());
+     observer.observe(gallery.lastElementChild);
 }
 
 function onMarkup(obj) {
@@ -84,7 +100,7 @@ function smoothScrollGallery() {
   const { height } = gallery.firstElementChild.getBoundingClientRect();
 
   window.scrollBy({
-    top: height * 2,
+    top: height,
     behavior: 'smooth',
   });
 };
